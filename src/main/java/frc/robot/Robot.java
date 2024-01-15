@@ -94,10 +94,10 @@ public class Robot extends TimedRobot {
   public void testPeriodic() {}
 
   /** This function is called once when the robot is first started up. */
-  @Override
-  public void simulationInit() {}
+ // @Override
+ // public void simulationInit() {}
 
   /** This function is called periodically whilst in simulation. */
-  @Override
-  public void simulationPeriodic() {}
+  // @Override
+ //  public void simulationPeriodic() {}
 }
