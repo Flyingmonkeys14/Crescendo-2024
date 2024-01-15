@@ -3,48 +3,49 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.commands;
+import frc.robot.Constants;
+import frc.robot.subsystems.Swerve;
 
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.DrivetrainSubsystem;
-
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier; 
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj2.command.Commands;
+
+
 /** An example command that uses an example subsystem. */
-public class DefaultDriveCommand extends CommandBase {
-    private final DrivetrainSubsystem m_drivetrainsubsystem;
+public class TeleopSwerve extends CommandBase {
+   private Swerve s_Swerve;
+   private DoubleSupplier translationSup;
+   private DoubleSupplier strafeSup;
+   private DoubleSupplier rotationSup;
+   private BooleanSupplier robotCentricSup;
+  
+  public TeleopSwerve(Swerve s_Swerve, DoubleSupplier translationSup, DoubleSupplier strafeSup, DoubleSupplier rotationSup, BooleanSupplier robotCentricSup) {
+    this.s_Swerve;
+    addRequirements(s_Swerve);
+  
+  this.translationSup = translationSup;
+  this.strafeSup = strafeSup;
+  this.rotationSup = rotationSup;
+  this.robotCentricSup = robotCentricSup;
+  }
 
-    private final DoubleSupplier m_traslationXSupplier;
-    private final DoubleSupplier m_traslationYSupplier;
-    private final DoubleSupplier m_rotationSupplier;
-
-    public DefaultDriveCommand(DrivetrainSubsystem drivetrainSubsystem,
-                               DoubleSupplier m_traslationXSupplier,
-                               DoubleSupplier m_traslationYSupplier,
-                               DoubleSupplier m_rotationSupplier; ) {
-            this.m_drivetrainsubsystem = drivetrainSubsystem;
-            this.m_translationXSupplier = translationXSupplier;
-            this.m_translationYSupplier = translationYSupplier;
-            this.m_rotationSupplier = rotationSupplier;
-
-            addRequirements(drivetrainSubsystem);
-}
 
     @Override
     public void execute() {
-      //You can use `new ChassisSpeeds(...)` for robot-oriented movement instead of field-oriented movement
-      m_drivetrainsubsystem.drive(
-            ChassisSpeeds.fromFieldRelativeSpeeds(
-                  m_traslationXSupplier.getAsDouble(),
-                  m_traslationYSupplier.getAsDouble(),
-                  m_rotationSupplier.getAsDouble(),
-                  m_drivetrainsubsystem.getGyroscopeRotation()
-            )
-      );
-    }
-
-    @Override
-    public void end(boolean interrupted) {
-      m_drivetrainsubsystem.drive(new ChassisSpeeds(vxMetersPerSecond:0.0, vyMetersPerSecond:0.0, omegaRadiansPerSecond:0.0));
-    }
+      /* Get Values, Deadband*/
+     double translationVal = MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.stickDeadband);
+     double strafeVal = MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.stickDeadband);
+     double rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.stickDeadband);
+     
+     /* Drive */
+     s_Swerve.drive(
+      new Translation2d(translationVal,  strafeVal).times(Constants.Swerve.maxSpeed),
+      rotationVal * Constants.Swerve.maxAngularVelocity,
+      !robotCentricSup.getAsBoolean(),
+      true 
+     );
+      }
 }
