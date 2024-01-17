@@ -21,7 +21,7 @@ public class AutoBase extends SequentialCommandGroup {
     public Swerve swerve;
     public static final ProfiledPIDController profiledthetaController = 
         new ProfiledPIDController(Constants.AutoConstants.kPThethController, 0, 0
-            Constatns.AutoConstants.kThetaControllerConstraints);
+            Constants.AutoConstants.kThetaControllerConstraints);
     public static final PIDController thetaController = 
         new PIDController(Constants.AutoConstants.kPThetaController, 0, 0);
 
