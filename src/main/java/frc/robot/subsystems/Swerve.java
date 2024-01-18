@@ -27,7 +27,7 @@ public class Swerve extends SubsystemBase {
     public SwerveDriveOdometry swerveOdometry;
     public SwerveModule[] mSwerveMods;
     // public AHRS gyro;
-    public Pigeon IMU gyro;
+    public PigeonIMU gyro;
 
     public Swerve() {
         gyro = new PigeonIMU(22);
@@ -36,10 +36,10 @@ public class Swerve extends SubsystemBase {
 
 
             mSwerveMods = new SwerveModule[] {
-                new SwerveModule0(0, Constants.Swerve.Mod0.constatns),
-                new SwerveModule0(1, Constants.Swerve.Mod1.constatns),
-                new SwerveModule0(2, Constants.Swerve.Mod2.constatns),
-                new SwerveModule0(3, Constants.Swerve.Mod3.constatns),
+                new SwerveModule(0, Constants.Swerve.Mod0.constants),
+                new SwerveModule(1, Constants.Swerve.Mod1.constants),
+                new SwerveModule(2, Constants.Swerve.Mod2.constants),
+                new SwerveModule(3, Constants.Swerve.Mod3.constants),
             };
 
             /* By pausing init for a second before setting module offsets, we avoid a bug with inverting motors.
@@ -79,7 +79,7 @@ public class Swerve extends SubsystemBase {
         mSwerveMods[3].setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(0)), true);
     }
     /* Used by SwerveControllerCommand in Auto */
-    public void setModuleStates(SwerveModuleStates[] desiredStates) {
+    public void setModuleStates(SwerveModuleState[] desiredStates) {
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, (Constants.Swerve.maxSpeed));
         
         for(SwerveModule mod : mSwerveMods){
@@ -92,7 +92,7 @@ public class Swerve extends SubsystemBase {
     }
 
     public void resetOdometry(Pose2d pose) {
-        swerveOdometry.resetPosition(getYaw(), getModulePosition(), pose);
+        swerveOdometry.resetPosition(getYaw(), getModulePositions(), pose);
     }
 
     public SwerveModuleState[] getModuleStates(){
@@ -137,7 +137,7 @@ public class Swerve extends SubsystemBase {
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Integrated", mod.getPosition().angle.getDegrees());
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond);
             SmartDashboard.putNumber("Mod" + mod.moduleNumber + "Requested Angle", mod.getAngleDiagnostic());
-            SmartDashboard.putNumber("Gyro Value: ",gyro.getYaw());
+            SmartDashboard.putNumber("Gyro Value: ", gyro.getYaw());
         }
     }
 }

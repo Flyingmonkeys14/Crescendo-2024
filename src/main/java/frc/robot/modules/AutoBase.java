@@ -43,9 +43,9 @@ public AutoBase(Swerve swerve) {
  */
 public SwerveControllerCommand baseSwerveCommand(Trajectory trajectory) {
     SwerveControllerCommand command = new SwerveControllerCommand(trajectory, swerve::getPose,
-    Constants.Swerve.swervekinematics,
-    new PIDController(Constants.AutoConstants.kpXController, 0, 0),
-    new PIDController(Constants.AutoConstants.KpYController, 0,0), profiledthetaController,
+    Constants.Swerve.swerveKinematics,
+    new PIDController(Constants.AutoConstants.kPXController, 0, 0),
+    new PIDController(Constants.AutoConstants.kPYController, 0,0), profiledthetaController,
     swerve::setModuleStates, swerve);
     return command;
 }
