@@ -5,14 +5,16 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.button.Button;
-import frc.robot.commands.DefaultDriveCommand;
-import frc.robot.subsystems.DrivetrainSubsystems;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+//import frc.robot.subsystems.StabilizerController;
+import frc.robot.subsystems.Swerve;
+import frc.robot.commands.TeleopSwerve;
+//import frc.robot.subsystems.StabilizerController;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -22,77 +24,66 @@ import frc.robot.subsystems.DrivetrainSubsystems;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final DrivetrainSubsystems m_exampleSubsystem = new DrivetrainSubsystems();
+  private final Swerve m_Swerve = new Swerve();
 
-  // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandXboxController m_driverController =
-      new CommandXboxController(OperatorConstants.kDriverControllerPort);
+  
+  //public final Joystick m_operator = new Joystick(0);
+  //public final Joystick m_driver = new Joystick(1);
+  public final XboxController m_operator = new XboxController(1);
+  public final XboxController m_driver = new XboxController(0);
+/* Drive Controls */
+// private final int translationAxis = Joystick.AxisType.kY.value;
+// private final int strafeAxis = Joystick.AxisType.kX.value;
+// private final int rotationAxis = Joystick.AxisType.kZ.value;
 
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
-  public RobotContainer() {
-m_drivetrainSubsystem.setDefultCommand(new DefaultDriveCommand(
-  m_drivetrainSubsystem,
-  () -> modifyAxis(m_controller.getRawAxis(axis:0) * 4.95)
-  () -> modifyAxis(m_controller.getRawAxis(axis:1) * 4.95)
-  () -> modifyAxis(m_controller.getRawAxis(axis:3) * 2*Math.PI)
-));
+/* Driver Buttons */
+// private final JoystickButton zeroGyro = new JoystickButton(m_driver, Joystick.ButtonType.kTrigger.value);
+// private final JoystickButton robotCentric = new JoystickButton(m_driver, Joystick.ButtonType.kTop.value);
 
+// private final Joystick m_driver = new Joystick(0);
+// private final Joystick m_driver2 = new Joystick(1);
 
+/**
+ * The container for the robot. Contains subsystems, OI devices, and commands.
+ */
+public RobotContainer() {
 
-    // Configure the trigger bindings
-    configureButtonBindings();
-  }
+  m_Swerve.setDefaultCommand(
 
+  new TeleopSwerve(
+    m_Swerve,
+    () -> m_driver.getLeftX(),
+    () -> m_driver.getLeftY(),
+    () -> m_driver.getRightX(),
+    () -> m_driver.getAButton())
+);}
 
-  //This is code from the teplate, change if needed.
-  /**
-   * Use this method to define your trigger->command mappings. Triggers can be created via the
-   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
-   * predicate, or via the named factories in {@link
-   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
-   * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-   * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-   * joysticks}.
-   */
+/**
+ * Use this method to define your button-> command mappings. Buttons can be created by
+ * instantiating a {@link GenericHID} or one of its subclasses ({@link
+ * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
+ * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
+ */
+private void configureButtonBindings() {
+  // Back button zeros the gyroscope
+  // new Button(m_controller::getBackButton)
+  //         // No requirements because we don't need to interrupt anything
+  //          .whenPressed(m_Swerve::reset);
 
-  private void configureButtonBindings() {
-    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-    new Button(m_controller::getBackButton)
-        .whenPressed(m_drivetrainSubsystem:: zeroGyroscope);
+      /* Driver Buttons */
+      // zeroGyro.onTrue(new InstantCommand(() -> m_Swerve.zeroGyro()));
+    
+}
 
-    // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
-    // cancelling on release.
-  }
-
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-  public Command getAutonomousCommand() {
-    // An example command will be run in autonomous
-    return new InstantCommand();
-  }
-
-  private static double deadband(double value, double deadband) {
-    if (Math.abs(value) > deadband) {
-      if (value > 0.0) {
-        return (value - deadband) / (1.0 - deadband);
-      } else {
-        return (value + deadband) / (1.0 - deadband);
-      }/////////////////////////////////////////////////////////////////////////////////
-    } else {
-      return 0.0;
-    }
-  }
 
   private static double modifyAxis(double value) {
     // Deadband
-    value = deadband(value, deadband:0.5);
+    value = deadband(value, deadband:0.05);
 
     // square the axis
     value = Math.copySign(value * value, value);
 
     return value;
+
   }
 }

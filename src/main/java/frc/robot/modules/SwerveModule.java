@@ -18,7 +18,7 @@ import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 
-public class SwerveModule {}
+public class SwerveModule {
 public int moduleNumber;
 private Rotation2d angleOffset;
 private Rotation2d lastAngle;
@@ -75,7 +75,7 @@ private void setAngle(SwerveModuleState desireState){
 }
 
 private Rotation2d getAngle(){
-    return Rotation2d.fromDegrees(Conversions.falconToDegrees(mAngleMotor.getSelectedSensorPosition(), COnstants.Swerve.angleGearRatio));
+    return Rotation2d.fromDegrees(Conversions.falconToDegrees(mAngleMotor.getSelectedSensorPosition(), Constants.Swerve.angleGearRatio));
 }
 
 public Rotation2d getCanCoder(){
